@@ -6,6 +6,7 @@ import Navbar from "@/components/navbar";
 import HeroSection from "@/components/hero-section";
 import FeatureSection from "@/components/feature-section";
 import CTASection from "@/components/cta-section";
+import Footer from "@/components/footer";
 
 export default function Home() {
     const [showSignup, setShowSignup] = useState(false)
@@ -18,6 +19,7 @@ export default function Home() {
             <CTASection setShowSignup={setShowSignup} />
 
             <SignupDialog open={showSignup} onOpenChange={setShowSignup} />
+            <Footer/>
         </div>
   );
 }
