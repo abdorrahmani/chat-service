@@ -1,4 +1,3 @@
-"use client"
 import {motion, type Variants, type Target} from "framer-motion";
 import {MessageCircle, Github, Twitter, Linkedin} from "lucide-react";
 
@@ -91,17 +90,6 @@ export function Footer() {
                         </motion.a>
                     </div>
                 </div>
-            </motion.div>
-
-            <motion.div
-                aria-hidden
-                initial={{opacity: 0}}
-                whileInView={{opacity: 1}}
-                viewport={{once: true}}
-                transition={{duration: 1.2}}
-                className="pointer-events-none absolute inset-0 -z-10"
-            >
-                <div className="absolute -bottom-24 left-1/2 h-48 w-[36rem] -translate-x-1/2 rounded-full bg-[#7c3aed]/20 blur-3xl" />
             </motion.div>
         </footer>
     );

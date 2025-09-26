@@ -41,19 +41,19 @@ export function SignupDialog({ open, onOpenChange }: SignupDialogProps) {
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-md gradient-bg border-white/20">
+            <DialogContent className="w-[95vw] max-w-md mx-auto gradient-bg border-white/20 p-4 sm:p-6">
                 <DialogHeader>
                     <motion.div
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.3 }}
-                        className="flex items-center justify-center mb-4"
+                        className="flex items-center justify-center mb-3 md:mb-4"
                     >
-                        <div className="bg-white/20 p-3 rounded-full">
-                            <MessageCircle className="h-8 w-8 text-white" />
+                        <div className="bg-white/20 p-2 md:p-3 rounded-full">
+                            <MessageCircle className="h-6 w-6 md:h-8 md:w-8 text-white" />
                         </div>
                     </motion.div>
-                    <DialogTitle className="text-center text-2xl font-bold text-white">Join ChatFlow</DialogTitle>
+                    <DialogTitle className="text-center text-xl md:text-2xl font-bold text-white">Join ChatFlow</DialogTitle>
                 </DialogHeader>
 
                 <motion.form
@@ -61,10 +61,10 @@ export function SignupDialog({ open, onOpenChange }: SignupDialogProps) {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.4, delay: 0.1 }}
                     onSubmit={handleSubmit}
-                    className="space-y-6"
+                    className="space-y-4 md:space-y-6"
                 >
                     <div className="space-y-2">
-                        <Label htmlFor="username" className="text-white/90">
+                        <Label htmlFor="username" className="text-white/90 text-sm md:text-base">
                             Username
                         </Label>
                         <Input
@@ -74,13 +74,13 @@ export function SignupDialog({ open, onOpenChange }: SignupDialogProps) {
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
-                            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40"
+                            className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40 text-sm md:text-base h-10 md:h-11"
                         />
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="password" className="text-white/90">
-                            Password
+                        <Label htmlFor="password" className="text-white/90 text-sm md:text-base">
+                        Password
                         </Label>
                         <div className="relative">
                             <Input
@@ -90,16 +90,16 @@ export function SignupDialog({ open, onOpenChange }: SignupDialogProps) {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40 pr-10"
+                                className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40 pr-10 text-sm md:text-base h-10 md:h-11"
                             />
                             <Button
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                className="absolute right-0 top-0 h-full px-3 text-white/60 hover:text-white hover:bg-transparent"
+                                className="absolute right-0 top-0 h-full px-2 md:px-3 text-white/60 hover:text-white hover:bg-transparent"
                                 onClick={() => setShowPassword(!showPassword)}
                             >
-                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                {showPassword ? <EyeOff className="h-3 w-3 md:h-4 md:w-4" /> : <Eye className="h-3 w-3 md:h-4 md:w-4" />}
                             </Button>
                         </div>
                     </div>
@@ -108,14 +108,14 @@ export function SignupDialog({ open, onOpenChange }: SignupDialogProps) {
                         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                             <Button
                                 type="submit"
-                                className="w-full bg-white text-primary hover:bg-white/90 text-lg py-6"
+                                className="w-full bg-white text-primary hover:bg-white/90 text-base md:text-lg py-4 md:py-6 h-12 md:h-14"
                                 disabled={isLoading || !username || !password}
                             >
                                 {isLoading ? (
                                     <motion.div
                                         animate={{ rotate: 360 }}
                                         transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                                        className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full"
+                                        className="w-4 h-4 md:w-5 md:h-5 border-2 border-primary border-t-transparent rounded-full"
                                     />
                                 ) : (
                                     <>Create Account &rarr;</>
