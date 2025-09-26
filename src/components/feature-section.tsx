@@ -3,7 +3,7 @@
 import { motion } from "framer-motion"
 import { MessageCircle, Users, Shield, Zap, Globe, Lock } from "lucide-react"
 
-export default function FeatureSection() {
+export function FeatureSection() {
     return (
       <div className="container mx-auto px-4 py-16">
           <motion.div

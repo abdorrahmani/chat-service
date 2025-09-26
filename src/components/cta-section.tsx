@@ -3,7 +3,7 @@ import {ShimmerButton} from "@/components/shimmer-button";
 import {Zap} from "lucide-react";
 import {Dispatch, SetStateAction} from "react";
 
-export default function CTASection({setShowSignup}: {setShowSignup:Dispatch<SetStateAction<boolean>>}) {
+export function CTASection({setShowSignup}: {setShowSignup:Dispatch<SetStateAction<boolean>>}) {
     return (
         <motion.div
             initial={{ y: 50, opacity: 0 }}

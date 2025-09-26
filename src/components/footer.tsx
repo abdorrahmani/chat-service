@@ -2,7 +2,7 @@
 import {motion, type Variants, type Target} from "framer-motion";
 import {MessageCircle, Github, Twitter, Linkedin} from "lucide-react";
 
-export default function Footer() {
+export function Footer() {
     const containerVariants: Variants = {
         hidden: {opacity: 0, y: 20},
         visible: {opacity: 1, y: 0},

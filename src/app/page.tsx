@@ -2,11 +2,7 @@
 
 import {useState} from "react"
 import {SignupDialog} from "@/components/signup-dialog"
-import Navbar from "@/components/navbar";
-import HeroSection from "@/components/hero-section";
-import FeatureSection from "@/components/feature-section";
-import CTASection from "@/components/cta-section";
-import Footer from "@/components/footer";
+import {Navbar,HeroSection,FeatureSection,CTASection,Footer} from "@/components";
 
 export default function Home() {
     const [showSignup, setShowSignup] = useState(false)

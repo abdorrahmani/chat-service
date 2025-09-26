@@ -4,7 +4,7 @@ import {ShimmerButton} from "@/components/shimmer-button";
 import {Dispatch, SetStateAction} from "react";
 import {AuroraText} from "@/components/aurora-text";
 
-export default function HeroSection({setShowSignup}:{setShowSignup:Dispatch<SetStateAction<boolean>>}) {
+export function HeroSection({setShowSignup}:{setShowSignup:Dispatch<SetStateAction<boolean>>}) {
     return (
         <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
             <div className="text-center max-w-4xl mx-auto">

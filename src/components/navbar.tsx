@@ -4,7 +4,7 @@ import {MessageCircle} from "lucide-react";
 import {InteractiveHoverButton} from "@/components/interactive-hover-button";
 import {Button} from "@/components/ui/button";
 
-export default function Navbar({setShowSignup}:{setShowSignup:Dispatch<SetStateAction<boolean>>}) {
+export function Navbar({setShowSignup}:{setShowSignup:Dispatch<SetStateAction<boolean>>}) {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     return (
