@@ -1,10 +1,11 @@
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import {ShimmerButton} from "@/components/shimmer-button";
-import {Dispatch, SetStateAction} from "react";
 import {AuroraText} from "@/components/aurora-text";
+import { useSignupStore } from "@/hooks/use-signup-store";
 
-export function HeroSection({setShowSignup}:{setShowSignup:Dispatch<SetStateAction<boolean>>}) {
+export function HeroSection() {
+    const openSignup = useSignupStore((s) => s.open)
     return (
         <div className="container mx-auto px-4 md:px-6 py-12 md:py-20">
             <div className="text-center max-w-4xl mx-auto">
@@ -34,7 +35,7 @@ export function HeroSection({setShowSignup}:{setShowSignup:Dispatch<SetStateActi
                     transition={{ duration: 0.8, delay: 0.6 }}
                     className="flex flex-col sm:flex-row gap-4 justify-center px-4"
                 >
-                    <ShimmerButton onClick={() => setShowSignup(true)}>
+                    <ShimmerButton onClick={openSignup}>
                         Start Chatting Now
                     </ShimmerButton>
                     <Button

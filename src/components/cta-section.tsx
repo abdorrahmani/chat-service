@@ -1,9 +1,10 @@
 import {motion} from "framer-motion";
 import {ShimmerButton} from "@/components/shimmer-button";
 import {Zap} from "lucide-react";
-import {Dispatch, SetStateAction} from "react";
+import { useSignupStore } from "@/hooks/use-signup-store";
 
-export function CTASection({setShowSignup}: {setShowSignup:Dispatch<SetStateAction<boolean>>}) {
+export function CTASection() {
+    const openSignup = useSignupStore((s) => s.open)
     return (
         <motion.div
             initial={{ y: 50, opacity: 0 }}
@@ -16,7 +17,7 @@ export function CTASection({setShowSignup}: {setShowSignup:Dispatch<SetStateActi
                 Join thousands of users already chatting on ChatFlow
             </p>
 
-            <ShimmerButton onClick={() => setShowSignup(true)}
+            <ShimmerButton onClick={openSignup}
                            className="bg-accent hover:bg-accent/90  text-white text-lg inline-flex">
                 <Zap className="mr-2 h-4 w-4 md:h-5 md:w-5" />
                 Join ChatFlow Today

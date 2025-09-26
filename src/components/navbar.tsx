@@ -1,10 +1,12 @@
 import {AnimatePresence, motion} from "framer-motion";
-import {Dispatch, SetStateAction, useState} from "react";
+import {useState} from "react";
 import {MessageCircle} from "lucide-react";
 import {InteractiveHoverButton} from "@/components/interactive-hover-button";
 import {Button} from "@/components/ui/button";
+import { useSignupStore } from "@/hooks/use-signup-store";
 
-export function Navbar({setShowSignup}:{setShowSignup:Dispatch<SetStateAction<boolean>>}) {
+export function Navbar() {
+    const openSignup = useSignupStore((s) => s.open)
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
     return (
@@ -36,8 +38,8 @@ export function Navbar({setShowSignup}:{setShowSignup:Dispatch<SetStateAction<bo
                  </motion.a>
              </div>
 
-             <div className="flex items-center gap-2">
-                 <InteractiveHoverButton onClick={() => setShowSignup(true)}
+            <div className="flex items-center gap-2">
+                <InteractiveHoverButton onClick={openSignup}
                                          className="bg-white/20 hover:bg-white/30 text-white border-white/30">
                 <span>
                     Join

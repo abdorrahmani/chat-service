@@ -11,13 +11,11 @@ import { Label } from "@/components/ui/label"
 import { MessageCircle, Eye, EyeOff } from "lucide-react"
 import { useAuth } from "@/providers/auth-provider"
 import { useRouter } from "next/navigation"
+import { useSignupStore } from "@/hooks/use-signup-store"
 
-interface SignupDialogProps {
-    open: boolean
-    onOpenChange: (open: boolean) => void
-}
-
-export function SignupDialog({ open, onOpenChange }: SignupDialogProps) {
+export function SignupDialog() {
+    const isOpen = useSignupStore((s) => s.isOpen)
+    const setOpen = useSignupStore((s) => s.setOpen)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [showPassword, setShowPassword] = useState(false)
@@ -32,7 +30,7 @@ export function SignupDialog({ open, onOpenChange }: SignupDialogProps) {
         const success = await login(username, password)
 
         if (success) {
-            onOpenChange(false)
+            setOpen(false)
             router.push("/chat")
         }
 
@@ -40,7 +38,7 @@ export function SignupDialog({ open, onOpenChange }: SignupDialogProps) {
     }
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
+        <Dialog open={isOpen} onOpenChange={setOpen}>
             <DialogContent className="w-[95vw] max-w-md mx-auto gradient-bg border-white/20 p-4 sm:p-6">
                 <DialogHeader>
                     <motion.div
