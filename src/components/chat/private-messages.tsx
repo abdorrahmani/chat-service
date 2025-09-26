@@ -1,19 +1,18 @@
 "use client"
 
-import type React from "react"
-
-import { useMemo, useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Search, Plus, MessageCircle, ArrowLeft, Send } from "lucide-react"
-import { MessageBubble } from "@/components/chat/message-bubble"
-import { useAuth } from "@/providers/auth-provider"
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
-import { NewChatDialog } from "@/components/chat/new-chat-dialog"
+import React, {useEffect, useRef} from "react"
+import {useMemo, useState} from "react"
+import {AnimatePresence, motion} from "framer-motion"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
+import {Avatar, AvatarFallback} from "@/components/ui/avatar"
+import {Card, CardContent} from "@/components/ui/card"
+import {Badge} from "@/components/ui/badge"
+import {ArrowLeft, MessageCircle, Plus, Search, Send} from "lucide-react"
+import {MessageBubble} from "@/components/chat/message-bubble"
+import {useAuth} from "@/providers/auth-provider"
+import {Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger} from "@/components/ui/sheet"
+import {NewChatDialog} from "@/components/chat/new-chat-dialog"
 
 interface Conversation {
     id: string
@@ -30,6 +29,104 @@ interface PrivateMessage {
     content: string
     timestamp: Date
     type: "private"
+}
+
+const DesktopThread: React.FC<{
+    selectedConv: Conversation | undefined
+    currentMessages: PrivateMessage[]
+    user: any
+    newMessage: string
+    setNewMessage: React.Dispatch<React.SetStateAction<string>>
+    handleSubmitSendPrivateMessage: (e: React.FormEvent) => void
+}> = ({
+    selectedConv,
+    currentMessages,
+    user,
+    newMessage,
+    setNewMessage,
+    handleSubmitSendPrivateMessage,
+}) => {
+    if (!selectedConv) {
+        return (
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="hidden md:flex flex-1 items-center justify-center text-center"
+            >
+                <div className="space-y-3 px-6">
+                    <MessageCircle className="h-12 w-12 text-white/30 mx-auto" />
+                    <h3 className="text-white text-lg font-semibold">Select a conversation</h3>
+                    <p className="text-white/60 text-sm">Choose a chat to start messaging.</p>
+                </div>
+            </motion.div>
+        )
+    }
+
+    return (
+        <motion.div
+            key={selectedConv.id}
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 24 }}
+            className="hidden md:flex flex-1 flex-col"
+        >
+            <div className="p-4 bg-white/10 backdrop-blur-sm border-b border-white/20">
+                <div className="flex items-center gap-3">
+                    <div className="relative">
+                        <Avatar className="h-10 w-10 bg-white/20 border border-white/30">
+                            <AvatarFallback className="text-white bg-transparent">
+                                {selectedConv.username.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                        </Avatar>
+                        {selectedConv.online && (
+                            <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-green-500 border-2 border-white rounded-full" />
+                        )}
+                    </div>
+                    <div className="min-w-0">
+                        <h2 className="font-semibold text-white truncate">{selectedConv.username}</h2>
+                        <p className="text-white/60 text-sm">{selectedConv.online ? "Online" : "Offline"}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                <AnimatePresence initial={false}>
+                    {currentMessages.map((message, index) => (
+                        <MessageBubble
+                            key={message.id}
+                            message={message}
+                            isOwn={message.username === user?.username}
+                            delay={index * 0.06}
+                        />
+                    ))}
+                </AnimatePresence>
+            </div>
+
+            <motion.form
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                onSubmit={handleSubmitSendPrivateMessage}
+                className="p-4 bg-white/10 backdrop-blur-sm border-t border-white/20"
+            >
+
+                <div className="flex gap-3">
+                    <Input
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder={`Message ${selectedConv.username}...`}
+                        className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40"
+                    />
+                    <Button
+                        type="submit"
+                        disabled={!newMessage.trim()}
+                        className="bg-white/20 hover:bg-white/30 text-white border-white/30"
+                    >
+                        <Send className="h-4 w-4" />
+                    </Button>
+                </div>
+            </motion.form>
+        </motion.div>
+    )
 }
 
 export function PrivateMessages() {
@@ -122,7 +219,7 @@ export function PrivateMessages() {
         return `${days}d ago`
     }
 
-    const handleSendPrivateMessage = (e: React.FormEvent) => {
+    const handleSubmitSendPrivateMessage = (e: React.FormEvent) => {
         e.preventDefault()
         if (!newMessage.trim() || !selectedConversation || !user) return
 
@@ -146,13 +243,12 @@ export function PrivateMessages() {
 
     const openThread = (id: string) => {
         setSelectedConversation(id)
-        // Open slide-over on mobile
+
         setIsMobileThreadOpen(true)
     }
 
     const closeThread = () => {
         setIsMobileThreadOpen(false)
-        // Keep selection for desktop; on mobile, selection is fine to persist
     }
 
     const handleStartChat = (userId: string) => {
@@ -163,89 +259,7 @@ export function PrivateMessages() {
         setIsNewChatOpen(false)
     }
 
-    // Desktop thread pane (md+)
-    const DesktopThread = () => {
-        if (!selectedConv) {
-            return (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="hidden md:flex flex-1 items-center justify-center text-center"
-                >
-                    <div className="space-y-3 px-6">
-                        <MessageCircle className="h-12 w-12 text-white/30 mx-auto" />
-                        <h3 className="text-white text-lg font-semibold">Select a conversation</h3>
-                        <p className="text-white/60 text-sm">Choose a chat to start messaging.</p>
-                    </div>
-                </motion.div>
-            )
-        }
-
-        return (
-            <motion.div
-                key={selectedConv.id}
-                initial={{ x: 20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ type: "spring", stiffness: 200, damping: 24 }}
-                className="hidden md:flex flex-1 flex-col"
-            >
-                <div className="p-4 bg-white/10 backdrop-blur-sm border-b border-white/20">
-                    <div className="flex items-center gap-3">
-                        <div className="relative">
-                            <Avatar className="h-10 w-10 bg-white/20 border border-white/30">
-                                <AvatarFallback className="text-white bg-transparent">
-                                    {selectedConv.username.charAt(0).toUpperCase()}
-                                </AvatarFallback>
-                            </Avatar>
-                            {selectedConv.online && (
-                                <div className="absolute -bottom-1 -right-1 h-3 w-3 bg-green-500 border-2 border-white rounded-full" />
-                            )}
-                        </div>
-                        <div className="min-w-0">
-                            <h2 className="font-semibold text-white truncate">{selectedConv.username}</h2>
-                            <p className="text-white/60 text-sm">{selectedConv.online ? "Online" : "Offline"}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                    <AnimatePresence initial={false}>
-                        {currentMessages.map((message, index) => (
-                            <MessageBubble
-                                key={message.id}
-                                message={message}
-                                isOwn={message.username === user?.username}
-                                delay={index * 0.06}
-                            />
-                        ))}
-                    </AnimatePresence>
-                </div>
-
-                <motion.form
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    onSubmit={handleSendPrivateMessage}
-                    className="p-4 bg-white/10 backdrop-blur-sm border-t border-white/20"
-                >
-                    <div className="flex gap-3">
-                        <Input
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            placeholder={`Message ${selectedConv.username}...`}
-                            className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/40"
-                        />
-                        <Button
-                            type="submit"
-                            disabled={!newMessage.trim()}
-                            className="bg-white/20 hover:bg-white/30 text-white border-white/30"
-                        >
-                            <Send className="h-4 w-4" />
-                        </Button>
-                    </div>
-                </motion.form>
-            </motion.div>
-        )
-    }
+    
 
     return (
         <>
@@ -263,7 +277,7 @@ export function PrivateMessages() {
                         />
                     </div>
 
-                    {/* Desktop New Chat button */}
+            
                     <div className="hidden md:block">
                         <Button
                             className="bg-white/20 hover:bg-white/30 text-white border-white/30"
@@ -345,10 +359,17 @@ export function PrivateMessages() {
                 </div>
             </div>
 
-            {/* Right pane: thread (desktop) */}
-            <DesktopThread />
+           
+            <DesktopThread
+                selectedConv={selectedConv}
+                currentMessages={currentMessages}
+                user={user}
+                newMessage={newMessage}
+                setNewMessage={setNewMessage}
+                handleSubmitSendPrivateMessage={handleSubmitSendPrivateMessage}
+            />
 
-            {/* Mobile thread slide-over */}
+          
             <div className="md:hidden">
                 <Sheet open={isMobileThreadOpen} onOpenChange={setIsMobileThreadOpen}>
                     <SheetTrigger asChild>
@@ -384,7 +405,7 @@ export function PrivateMessages() {
                                         ))}
                                     </AnimatePresence>
                                 </div>
-                                <form onSubmit={handleSendPrivateMessage} className="p-4 bg-white/10 backdrop-blur-sm border-t border-white/20">
+                                <form onSubmit={handleSubmitSendPrivateMessage} className="p-4 bg-white/10 backdrop-blur-sm border-t border-white/20">
                                     <div className="flex gap-3">
                                         <Input
                                             value={newMessage}
