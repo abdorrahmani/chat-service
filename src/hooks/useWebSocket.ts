@@ -62,7 +62,11 @@ export function useWebSocket<T = unknown>({
 
   const sendMessage = useCallback((msg: T | string | object) => {
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify(msg));
+      if (typeof msg === "string") {
+        wsRef.current.send(msg);
+      } else {
+        wsRef.current.send(JSON.stringify(msg));
+      }
     }
   }, []);
 

@@ -1,9 +1,9 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { LogOut, Menu, User, Users } from "lucide-react";
+import { LogOut, Menu, User, Users, Wifi, WifiOff } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ChatSidebar,
   MessageBubble,
@@ -14,6 +14,7 @@ import {
 } from "@/components/chat";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useWebSocket } from "@/hooks/useWebSocket";
 import { useAuth } from "@/providers/auth-provider";
 
 interface Message {
@@ -34,7 +35,8 @@ export default function ChatPage() {
   const router = useRouter();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Initialize with some demo messages
+  const { isConnected, lastMessage, sendMessage } = useWebSocket<string>();
+
   useEffect(() => {
     const demoMessages: Message[] = [
       {
@@ -62,15 +64,13 @@ export default function ChatPage() {
     setMessages(demoMessages);
   }, []);
 
-  // Auto scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, showTyping]);
-
+  
   const handleSendMessage = (content: string) => {
     if (!user) return;
 
-    // Show typing indicator briefly
     setShowTyping(true);
 
     setTimeout(() => {
@@ -83,9 +83,33 @@ export default function ChatPage() {
       };
 
       setMessages((prev) => [...prev, message]);
+      sendMessage(content);
       setShowTyping(false);
-    }, 500); // Brief delay to show typing
+    }, 500);
   };
+
+  useEffect(() => {
+    if (isConnected && user?.username) {
+      sendMessage(user.username);
+    }
+  }, [isConnected, user?.username, sendMessage]);
+
+  useEffect(() => {
+    if (!lastMessage) return;
+
+    const serverText =
+      typeof lastMessage === "string" ? lastMessage : String(lastMessage);
+
+    const incoming: Message = {
+      id: `${Date.now()}-${Math.random()}`,
+      username: "System",
+      content: serverText,
+      timestamp: new Date(),
+      type: "global",
+    };
+
+    setMessages((prev) => [...prev, incoming]);
+  }, [lastMessage]);
 
   const handleLogout = () => {
     logout();
@@ -95,13 +119,20 @@ export default function ChatPage() {
   const renderContent = () => {
     switch (activeTab) {
       case "profile":
-        return <UserProfile />;
+        return (
+          <div className="flex-1 overflow-y-auto">
+            <UserProfile />
+          </div>
+        );
       case "private":
-        return <PrivateMessages />;
+        return (
+          <div className="flex-1 overflow-y-auto">
+            <PrivateMessages />
+          </div>
+        );
       default:
         return (
-          <>
-            {/* Messages Area */}
+          <div className="flex-1 flex flex-col min-h-0">
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               <AnimatePresence mode="popLayout">
                 {messages.map((message, index) => (
@@ -109,22 +140,22 @@ export default function ChatPage() {
                     key={message.id}
                     message={message}
                     isOwn={message.username === user?.username}
-                    delay={index * 0.05} // Staggered animation
+                    delay={index * 0.05}
                   />
                 ))}
 
-                {/* Typing Indicator */}
                 {showTyping && <TypingIndicator username="Someone" />}
               </AnimatePresence>
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Enhanced Message Input */}
-            <MessageInput
-              onSendMessage={handleSendMessage}
-              placeholder="Type your message..."
-            />
-          </>
+            <div className="flex-shrink-0">
+              <MessageInput
+                onSendMessage={handleSendMessage}
+                placeholder="Type your message..."
+              />
+            </div>
+          </div>
         );
     }
   };
@@ -184,9 +215,8 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen gradient-bg flex">
-      {/* Desktop Sidebar */}
-      <div className="hidden md:block">
+    <div className="h-screen gradient-bg flex overflow-hidden">
+      <div className="hidden md:block fixed left-0 top-0 h-full z-10">
         <ChatSidebar
           activeTab={activeTab}
           onTabChange={setActiveTab}
@@ -194,13 +224,11 @@ export default function ChatPage() {
         />
       </div>
 
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
+      <div className="flex-1 flex flex-col md:ml-64 h-full">
         <motion.header
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="bg-white/10 backdrop-blur-sm border-b border-white/20 p-4"
+          className="bg-white/10 backdrop-blur-sm border-b border-white/20 p-4 flex-shrink-0"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -224,7 +252,18 @@ export default function ChatPage() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex max-sm:flex-col items-center gap-3">
+              <p>
+                {isConnected ? (
+                  <span className="flex text-sm gap-2 items-center text-white">
+                    <Wifi className="size-4" /> Connected
+                  </span>
+                ) : (
+                  <span className="flex text-sm gap-2 items-center text-red-600">
+                    <WifiOff className="size-4" /> Disconnected
+                  </span>
+                )}
+              </p>
               <span className="text-white/80 text-sm hidden sm:inline">
                 Welcome, {user?.username}!
               </span>
@@ -239,9 +278,7 @@ export default function ChatPage() {
             </div>
           </div>
         </motion.header>
-
-        {/* Dynamic Content */}
-        {renderContent()}
+        <div className="flex-1 flex flex-col min-h-0">{renderContent()}</div>
       </div>
     </div>
   );
