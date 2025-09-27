@@ -1,23 +1,21 @@
-/** biome-ignore-all assist/source/organizeImports: <explanation> */
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
+import { Eye, EyeOff, MessageCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type React from "react";
-
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MessageCircle, Eye, EyeOff } from "lucide-react";
-import { useAuth } from "@/providers/auth-provider";
-import { useRouter } from "next/navigation";
 import { useSignupStore } from "@/hooks/use-signup-store";
+import { useAuth } from "@/providers/auth-provider";
 
 export function SignupDialog() {
   const isOpen = useSignupStore((s) => s.isOpen);
@@ -34,7 +32,6 @@ export function SignupDialog() {
     setIsLoading(true);
 
     const success = await login(username, password);
-
     if (success) {
       setOpen(false);
       router.push("/chat");
@@ -61,7 +58,6 @@ export function SignupDialog() {
             Join ChatFlow
           </DialogTitle>
         </DialogHeader>
-
         <motion.form
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
