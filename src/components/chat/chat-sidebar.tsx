@@ -29,7 +29,7 @@ export function ChatSidebar({
       initial={{ x: -100, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       className={cn(
-        "relative w-64 bg-white/5 backdrop-blur-sm border-r border-white/20 p-4 h-full",
+        "w-64 bg-white/5 backdrop-blur-sm border-r border-white/20 p-4 h-screen flex flex-col",
         className,
       )}
     >
@@ -38,7 +38,7 @@ export function ChatSidebar({
         <span className="text-2xl font-bold text-white">ChatFlow</span>
       </div>
 
-      <nav className="space-y-2">
+      <nav className="space-y-2 flex-1">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
@@ -58,7 +58,7 @@ export function ChatSidebar({
         })}
       </nav>
 
-      <div className="absolute bottom-4 left-4 right-4">
+      <div className="mt-auto">
         <Button
           variant="ghost"
           className="w-full justify-start text-white/80 hover:text-white hover:bg-white/10"
