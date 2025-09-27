@@ -1,12 +1,11 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
+import { Send, Smile } from "lucide-react";
 import type React from "react";
-
-import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send, Smile } from "lucide-react";
 
 interface MessageInputProps {
   onSendMessage: (message: string) => void;
@@ -119,25 +118,6 @@ export function MessageInput({
           </motion.div>
         </AnimatePresence>
       </div>
-
-      {/* Typing indicator for current user */}
-      <AnimatePresence>
-        {isTyping && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="mt-2 text-white/50 text-xs"
-          >
-            <motion.span
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
-            >
-              Typing...
-            </motion.span>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </motion.form>
   );
 }
