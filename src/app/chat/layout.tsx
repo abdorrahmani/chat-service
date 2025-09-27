@@ -1,32 +1,35 @@
-"use client"
+"use client";
 
-import type React from "react"
+import { useRouter } from "next/navigation";
+import type React from "react";
+import { useEffect } from "react";
+import { useAuth } from "@/providers/auth-provider";
 
-import { useAuth } from "@/providers/auth-provider"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+export default function ChatLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
 
-export default function ChatLayout({ children }: { children: React.ReactNode }) {
-    const { user, isLoading } = useAuth()
-    const router = useRouter()
-
-    useEffect(() => {
-        if (!isLoading && !user) {
-            router.push("/")
-        }
-    }, [user, isLoading, router])
-
-    if (isLoading) {
-        return (
-            <div className="min-h-screen gradient-bg flex items-center justify-center">
-                <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            </div>
-        )
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/");
     }
+  }, [user, isLoading, router]);
 
-    if (!user) {
-        return null
-    }
+  if (isLoading) {
+    return (
+      <div className="min-h-screen gradient-bg flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
-    return <>{children}</>
+  if (!user) {
+    return null;
+  }
+
+  return <>{children}</>;
 }
